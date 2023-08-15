@@ -13,6 +13,26 @@ if(isset($_POST["submit"])) {
         $pattern = '/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/';    
         return preg_match($pattern, $email);
     }
+    
+    function emailExists($conn, $email) {
+        $sql = "SELECT COUNT(*) FROM users WHERE email = :email";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        
+        $count = $stmt->fetchColumn();
+        return $count > 0;
+    }
+    function nameExists($conn, $name) {
+        $sql = "SELECT COUNT(*) FROM users WHERE name = :name";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':name', $name);
+        $stmt->execute();
+        
+        $count = $stmt->fetchColumn();
+        return $count > 0;
+    }
+
     $name = $_POST["uname"];
     $email = $_POST["email"];
     $pass = $_POST["pass"];
@@ -22,8 +42,18 @@ if(isset($_POST["submit"])) {
         $nameError = "Username is required!";
     } elseif (strlen($name) < 2) {
         $nameError = "Username is too short!";
+    } else if(nameExists($conn, $name)) {
+        $nameError = "username already in use";
     } else{
         $name = trim($name);
+    }
+
+
+    //validate password
+    if (empty($pass)) {
+        $passError = "Enter password";
+    } elseif(strlen($pass) <= 4) {
+        $passError = "password should contain at least 5 characters";
     }
 
     // email validation
@@ -31,13 +61,8 @@ if(isset($_POST["submit"])) {
         $emailError = "Email is required!";
     } elseif (!validateEmail($email)) {
         $emailError = "Enter a valid email";
-    }
-
-    //validate password
-    if (empty($pass)) {
-        $passError = "Enter password";
-    } elseif(strlen($pass) <= 4) {
-        $passError = "password should contain at least 5 characters";
+    } else if(emailExists($conn, $email)) {
+        $emailError = "Email already in use";
     }
 
     //check is theres not error

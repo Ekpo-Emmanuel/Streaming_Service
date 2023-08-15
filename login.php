@@ -1,4 +1,6 @@
 <?php require "./includes/header.php" ?>
+<?php require "./config/config.php" ?>
+
 <?php 
 
 $emailError = "";
@@ -9,6 +11,15 @@ if(isset($_POST["submit"])) {
         $pattern = '/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/';    
         return preg_match($pattern, $email);
     }
+    function emailExists($conn, $email) {
+        $sql = "SELECT COUNT(*) FROM users WHERE email = :email";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        
+        $count = $stmt->fetchColumn();
+        return $count > 0;
+    }
     $email = $_POST["email"];
     $pass = $_POST["pass"];
 
@@ -17,6 +28,8 @@ if(isset($_POST["submit"])) {
         $emailError = "Email is required!";
     } elseif (!validateEmail($email)) {
         $emailError = "Enter a valid email";
+    } else if(!emailExists($conn, $email)) {
+        $emailError = "User does not exist";
     }
 
     // pass validation
@@ -31,12 +44,8 @@ if(isset($_POST["submit"])) {
         // $insert -> execute([
 
         // ]);
-        echo "<script>alert('complete')</script>";
         // header("location: index.php"); 
     }
-     else {
-        echo "<script>alert('not complete')</script>";
-     }
 }
 
 
@@ -93,5 +102,4 @@ if(isset($_POST["submit"])) {
         </div>
     </section>
     <!-- Login Section End -->
-
 <?php require "./includes/footer.php" ?>
