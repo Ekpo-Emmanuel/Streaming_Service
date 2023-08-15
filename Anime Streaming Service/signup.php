@@ -1,4 +1,6 @@
 <?php require "./includes/header.php" ?>
+<?php require "./config/config.php" ?>
+
 <?php 
 
 $nameError = "";
@@ -20,8 +22,6 @@ if(isset($_POST["submit"])) {
         $nameError = "Username is required!";
     } elseif (strlen($name) < 2) {
         $nameError = "Username is too short!";
-    } elseif (str_word_count($name) > 1) {
-        $nameError = "Enter 1 name";
     } else{
         $name = trim($name);
     }
@@ -42,16 +42,14 @@ if(isset($_POST["submit"])) {
 
     //check is theres not error
     if(empty($uname) AND empty($emailError) AND empty($passError)) {
-        // $insert = $conn->prepare("INSERT INTO addblog (firstname, lastname, title, category, description) VALUES (:firstname, :lastname, :title, :category, :description)");
-        // $insert -> execute([
-
-        // ]);
-        echo "<script>alert('complete')</script>";
-        // header("location: index.php"); 
+        $insert = $conn->prepare("INSERT INTO users (name, email, mypassword) VALUES (:name, :email, :mypassword)");
+        $insert -> execute([
+            ":name" => $name,
+            ":email" => $email,
+            ":mypassword" => password_hash($pass, PASSWORD_DEFAULT),
+        ]);
+        header("location: index.php"); 
     }
-     else {
-        echo "<script>alert('not complete')</script>";
-     }
 }
 
 ?>
@@ -63,6 +61,41 @@ if(isset($_POST["submit"])) {
         letter-spacing: 1px;
         font-size: 12px;
         margin-top: 5px;
+    }
+    .registration_end {
+        position: fixed;
+        background-color: rgba(0,0,0,.7);
+        width: 100%;
+        height: 100vh;
+        z-index: 5;
+        top: 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        place-content: center;
+    }
+    .registration_end .content {
+        background-color: #fff;
+        width: 500px;
+        padding: 30px;
+        border-radius: 5px;
+    }
+    .registration_end .content svg {
+        display: block;
+        margin: auto;
+        height: 100px;
+        background-color: lightgreen;
+        border-radius: 50px;
+        color: #fff;
+        padding: 5px;
+    }
+    .registration_end .content p {
+        font-size: 30px;
+        font-weight: bold;
+        display: block;
+        margin-top: 30px;
+        text-align: center;
     }
 </style>
 
@@ -97,7 +130,7 @@ if(isset($_POST["submit"])) {
     <!-- Signup Section End -->
 
         <!-- Login Section Begin -->
-        <section class="login spad">
+    <section class="login spad">
         <div class="container">
             <div class="row">
                 <div class="col-lg-6">
@@ -131,7 +164,7 @@ if(isset($_POST["submit"])) {
                                 <span class="icon_lock"></span>
                                 <small class="val_error"><?php echo $passError; ?></small>
                             </div>
-                            <button type="submit" class="site-btn" name="submit">Signup</button>
+                            <button type="submit" class="site-btn" name="submit" id="submit">Signup</button>
                         </form>
                         <!-- <a href="#" class="forget_pass">Forgot Your Password?</a> -->
                     </div>
