@@ -3,48 +3,75 @@
 
 <?php 
 
+// if(isset($_SESSION['username'])) {
+//     // header("location: ".$app);
+//     echo "<script>window.location.href = '".$app."''</script>";
+
+// }
+if(isset($_SESSION['username'])) {
+    echo "<script>window.location.href = '".$app."'</script>";
+}
+  
+
+
 $emailError = "";
 $passError = "";
+$genError = "";
 
 if(isset($_POST["submit"])) {
     function validateEmail($email) {
         $pattern = '/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/';    
         return preg_match($pattern, $email);
     }
-    function emailExists($conn, $email) {
-        $sql = "SELECT COUNT(*) FROM users WHERE email = :email";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':email', $email);
-        $stmt->execute();
-        
-        $count = $stmt->fetchColumn();
-        return $count > 0;
-    }
     $email = $_POST["email"];
     $pass = $_POST["pass"];
+
 
     // email validation
     if(empty($email)) {
         $emailError = "Email is required!";
     } elseif (!validateEmail($email)) {
         $emailError = "Enter a valid email";
-    } else if(!emailExists($conn, $email)) {
-        $emailError = "User does not exist";
-    }
+    } //else if(!emailExists($conn, $email)) {
+    //     $emailError = "User does not exist";
+    // }
 
     // pass validation
     if(empty($pass)) {
         $passError = "Password is required!";
     }
 
+    
+    
+    // Query to check if the email exists in the database
+    $stmt = $conn->query("SELECT * FROM users WHERE email = '$email'");
+    $stmt->execute();
+
+    $fetch = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($stmt->rowCount() > 0) {
+        $stored_password = $fetch['mypassword'];
+
+        if (password_verify($pass, $stored_password)) {
+            // Password is correct
+            
+            // $passError = "Login Successful";
+            $_SESSION['username'] = $fetch['name'];
+            $_SESSION['email'] = $fetch['email'];
+
+            echo "<script>window.location.href = 'index.php'</script>";
+        } else {
+            // Password is incorrect
+            $genError = "Incorrect Email or Password";
+        }
+    } else {
+        // Email not found
+        $genError = "Incorrect Email or Password";
+    }
 
     //check is theres not error
     if(empty($emailError) AND empty($passError)) {
-        // $insert = $conn->prepare("INSERT INTO addblog (firstname, lastname, title, category, description) VALUES (:firstname, :lastname, :title, :category, :description)");
-        // $insert -> execute([
 
-        // ]);
-        // header("location: index.php"); 
     }
 }
 
@@ -60,12 +87,14 @@ if(isset($_POST["submit"])) {
         margin-top: 5px;
     }
 </style>
+
     <!-- Login Section Begin -->
     <section class="login spad">
         <div class="container">
             <div class="row">
                 <div class="col-lg-6">
                     <div class="login__form">
+                    <small class="val_error"><?php echo $genError; ?></small>
                         <h3>Login</h3>
                         <form action="login.php" method="POST">
                             <div class="input__item">

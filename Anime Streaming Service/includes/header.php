@@ -1,4 +1,7 @@
-<?php $app = "http://localhost/projects/project1/Anime%20Streaming%20Service" ?>
+<?php
+
+session_start();
+$app = "http://localhost/projects/project1/Anime%20Streaming%20Service" ?>
 
 <!DOCTYPE html>
 <html lang="zxx">
@@ -51,25 +54,46 @@
                                 <li class="active"><a href="<?php echo $app ?>/index.php">Homepage</a></li>
                                 <li><a href="<?php echo $app ?>/categories.php">Categories <span class="arrow_carrot-down"></span></a>
                                     <ul class="dropdown">
-                                        <li><a href="<?php echo $app ?>/categories.php">Categories</a></li>
-                                        <li><a href="<?php echo $app ?>/anime-details.php">Anime Details</a></li>
+                                        <li><a href="<?php echo $app ?>/categories.php">Magic</a></li>
+                                        <li><a href="<?php echo $app ?>/categories.php">Adventure</a></li>
+                                        <li><a href="<?php echo $app ?>/categories.php">Action</a></li>
+                                        <li><a href="<?php echo $app ?>/categories.php">Fantasy</a></li>
+                                        <li><a href="<?php echo $app ?>/categories.php">Romance</a></li>
+
+
+                                        <!-- <li><a href="<?php echo $app ?>/anime-details.php">Anime Details</a></li>
                                         <li><a href="<?php echo $app ?>/anime-watching.php">Anime Watching</a></li>
                                         <li><a href="<?php echo $app ?>/blog-details.php">Blog Details</a></li>
                                         <li><a href="<?php echo $app ?>/signup.php">Sign Up</a></li>
-                                        <li><a href="<?php echo $app ?>/login.php">Login</a></li>
+                                        <li><a href="<?php echo $app ?>/login.php">Login</a></li> -->
                                     </ul>
                                 </li>
-                                <li><a href="<?php echo $app ?>/blog.php">Our Blog</a></li>
-                                <li><a href="#">Contacts</a></li>
+                                <!-- <li><a href="<?php echo $app ?>/blog.php">Our Blog</a></li> -->
+                                <!-- <li><a href="#">Contacts</a></li> -->
                             </ul>
                         </nav>
                     </div>
                 </div>
                 <div class="col-lg-2">
-                    <div class="header__right">
-                        <a href="#" class="search-switch"><span class="icon_search"></span></a>
-                        <a href="<?php echo $app ?>/login.php"><span class="icon_profile"></span></a>
-                    </div>
+                        <?php if (!isset($_SESSION['username'])) :?>
+                            <div class="header__right">
+                                <a href="#" class="search-switch"><span class="icon_search"></span></a>
+                                <a href="<?php echo $app ?>/login.php"><span class="icon_profile"></span></a>
+                            </div>
+                        <?php else:?>
+                            <div class="header__right" style="display: flex;width: unset; flex-direction: row; position: relative; transform:translateX(-100px)">
+                                <a href="#" class="search-switch"><span class="icon_search"></span></a>
+                                <nav class="header__menu mobile-menu"  style="position: absolute; top:0; transform:translateX(30px)">
+                                    <ul>
+                                        <li><a><?php echo $_SESSION['username']; ?><span class="arrow_carrot-down"></span></a>
+                                            <ul class="dropdown" style="width: 100">
+                                                <li><a href="<?php echo $app ?>/logout.php">Logout</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        <?php endif;?>
                 </div>
             </div>
             <div id="mobile-menu-wrap"></div>

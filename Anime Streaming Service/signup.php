@@ -3,6 +3,12 @@
 
 <?php 
 
+
+if(isset($_SESSION['username'])) {
+    // header("location: ".$app);
+    echo "<script>window.location.href = ".$app."</script>";
+
+}
 $nameError = "";
 $emailError = "";
 $passError = "";
@@ -73,7 +79,8 @@ if(isset($_POST["submit"])) {
             ":email" => $email,
             ":mypassword" => password_hash($pass, PASSWORD_DEFAULT),
         ]);
-        header("location: index.php"); 
+        // header("location: index.php"); 
+        echo "<script>window.location.href = 'login.php'</script>";
     }
 }
 
@@ -123,37 +130,6 @@ if(isset($_POST["submit"])) {
         text-align: center;
     }
 </style>
-
-    <!-- Signup Section Begin -->
-    <!-- <section class="signup spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="login__form">
-                        <h3>Sign Up</h3>
-                        <form action="#">
-                            <div class="input__item ">
-                                <input class="col-md-12" type="text" placeholder="Email address">
-                                <span class="icon_mail"></span>
-                            </div>
-                            <div class="input__item">
-                                <input type="text" placeholder="Your Name">
-                                <span class="icon_profile"></span>
-                            </div>
-                            <div class="input__item">
-                                <input type="text" placeholder="Password">
-                                <span class="icon_lock"></span>
-                            </div>
-                            <button type="submit" class="site-btn">Signup </button>
-                        </form>
-                        <h5>Already have an account? <a href="<?php echo $app ?>/login.php">Log In!</a></h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section> -->
-    <!-- Signup Section End -->
-
         <!-- Login Section Begin -->
     <section class="login spad">
         <div class="container">
